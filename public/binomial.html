@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribución Binomial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 50px;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 100px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: red; 
+            color: black; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:hover {
+            background-color: darkred; 
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            display: inline-block; 
+            width: 300px; 
+            height: auto; 
+            resize: none; 
+        }
+        .dropdown {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Distribución Binomial</h1>
+    <p>X ~ B(n, p)</p>
+    <label>n= <input type="number" id="trials" ></label>
+    <label>p= <input type="number" id="probability" step="0.01"></label>
+    <label>x= <input type="number" id="xValue" ></label>
+    
+    <div class="dropdown">
+        <label for="probType">Seleccionar Probabilidad:</label>
+        <select id="probType">
+            <option value="exact">P(X = x)</option>
+            <option value="greater">P(X > x)</option>
+            <option value="less">P(X < x)</option>
+        </select>
+    </div>
+    
+
+    <button onclick="calculateBinomialProbability()">Calcular</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function calculateBinomialProbability() {
+            const trials = parseInt(document.getElementById('trials').value);
+            const probability = parseFloat(document.getElementById('probability').value);
+            const xValue = parseInt(document.getElementById('xValue').value);
+            const probType = document.getElementById('probType').value;
+
+            const requestData = {
+                n: trials,
+                p: probability,
+                x: xValue,
+                tipo_probabilidad: probType
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/calculateBinomialProbability', { 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al conectar con el servidor.');
+                }
+
+                const result = await response.json();
+                document.getElementById('result').innerText = `Resultado: ${result.probabilidad}`; 
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error al calcular la probabilidad';
+            }
+        }
+    </script>
+</body>
+</html>
